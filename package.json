@@ -1,0 +1,14 @@
+{
+  "name": "achieve-hackathon",
+  "version": "1.0.0",
+  "description": "A random number generator with a spinning wheel displaying pizza wedges.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "author": "heyryanb",
+  "license": "ISC"
+}
