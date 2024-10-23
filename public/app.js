@@ -1,50 +1,20 @@
+let totalResults = 0;
+let isSpinning = false;
+let spinSpeed = 0;
+let angle = 0;
+let result = 0;
+let spinButtonClickCount = 0;
+const spinButtonMaxClicks = 5;
+const spinButtonResetTime = 60000; // 1 minute
+
 document.addEventListener('DOMContentLoaded', () => {
     const totalResultsInput = document.getElementById('totalResults');
     const spinButton = document.getElementById('spinButton');
     const resetButton = document.getElementById('resetButton');
     const respinButton = document.getElementById('respinButton');
-    const wheelContainer = document.getElementById('wheelContainer');
     const resultContainer = document.getElementById('resultContainer');
 
-    let totalResults = 0;
-    let result = 0;
-
-    function generateRandomNumber(max) {
-        return Math.floor(Math.random() * max) + 1;
-    }
-
-    function createWedge(index, total) {
-        const wedge = document.createElement('div');
-        wedge.classList.add('wedge');
-        wedge.style.transform = `rotate(${(360 / total) * index}deg)`;
-        const span = document.createElement('span');
-        span.textContent = index + 1;
-        wedge.appendChild(span);
-        return wedge;
-    }
-
-    function createWheel(total) {
-        wheelContainer.innerHTML = '';
-        for (let i = 0; i < total; i++) {
-            const wedge = createWedge(i, total);
-            wheelContainer.appendChild(wedge);
-        }
-    }
-
-    function spinWheel() {
-        const randomDegree = generateRandomNumber(360);
-        wheelContainer.style.transition = 'transform 4s ease-out';
-        wheelContainer.style.transform = `rotate(${randomDegree + 3600}deg)`;
-        result = Math.ceil((randomDegree % 360) / (360 / totalResults));
-        setTimeout(() => {
-            resultContainer.textContent = `You receive ${result} slices of pizza`;
-        }, 4000);
-    }
-
-    let spinButtonClickCount = 0;
-    const spinButtonMaxClicks = 5;
-    const spinButtonResetTime = 60000; // 1 minute
-
+    // Spin button click event
     spinButton.addEventListener('click', () => {
         if (spinButtonClickCount >= spinButtonMaxClicks) {
             alert('You have reached the maximum number of spins. Please wait a minute before trying again.');
@@ -53,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         totalResults = parseInt(totalResultsInput.value);
         if (totalResults >= 1 && totalResults <= 8) {
-            createWheel(totalResults);
-            spinWheel();
+            spinSpeed = random(15, 25);  // Set initial spin speed
+            isSpinning = true;
             spinButtonClickCount++;
             setTimeout(() => {
                 spinButtonClickCount--;
@@ -64,17 +34,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Reset button click event
     resetButton.addEventListener('click', () => {
         totalResultsInput.value = '';
-        wheelContainer.innerHTML = '';
         resultContainer.textContent = '';
+        angle = 0;
+        isSpinning = false;
+        loop();  // Restart draw loop to update
     });
 
+    // Respin button click event
     respinButton.addEventListener('click', () => {
         if (totalResults >= 1 && totalResults <= 8) {
-            spinWheel();
+            spinSpeed = random(10, 20);  // Set respin speed
+            isSpinning = true;
         } else {
             alert('Please enter a number between 1 and 8');
         }
     });
 });
+
+// p5.js code for drawing the spinning pizza wheel
+function setup() {
+    let canvasContainer = document.getElementById('canvasContainer');
+    let canvas = createCanvas(500, 500);
+    canvas.parent(canvasContainer);
+    angleMode(DEGREES);
+}
+
+function draw() {
+    // Clear background
+    background(255);
+
+    // Center the canvas and rotate
+    translate(width / 2, height / 2);
+    rotate(angle);
+    
+    // Draw the pizza
+    if (totalResults > 0) {
+        drawPizza(totalResults);
+    } else {
+        drawPizza(8); // Default to 8 slices if no input is provided
+    }
+
+    // If spinning, update the angle
+    if (isSpinning) {
+        angle += spinSpeed;
+        spinSpeed *= 0.98;  // Simulate friction by gradually reducing spin speed
+
+        // Stop spinning when the speed is very low
+        if (spinSpeed < 0.1) {
+            isSpinning = false;
+            result = getSelectedSlice();
+            document.getElementById("resultContainer").textContent = `You receive ${result} slices of pizza`;
+            noLoop();  // Stop p5 draw loop when wheel stops
+        }
+    }
+}
+
+function drawPizza(numSlices) {
+    // Draw pizza base
+    fill(250, 200, 50);  // Dough color
+    stroke(0);
+    ellipse(0, 0, 400, 400);
+
+    // Draw slices
+    for (let i = 0; i < numSlices; i++) {
+        let theta = 360 / numSlices;
+        fill(255, 69, 0, 150);  // Sauce color
+        arc(0, 0, 400, 400, i * theta, (i + 1) * theta, PIE);
+    }
+
+    // Draw toppings
+    for (let i = 0; i < 20; i++) {
+        let toppingAngle = random(360);
+        let toppingRadius = random(50, 180);
+        let x = toppingRadius * cos(toppingAngle);
+        let y = toppingRadius * sin(toppingAngle);
+        fill(139, 69, 19);  // Pepperoni color
+        noStroke();
+        ellipse(x, y, 15, 15);
+    }
+}
+
+function getSelectedSlice() {
+    let selectedAngle = (360 - angle % 360) % 360;  // Normalize the angle to 0-360 degrees
+    let sliceSize = 360 / totalResults;
+    let selectedSlice = Math.floor(selectedAngle / sliceSize) + 1;
+    return selectedSlice;
+}
