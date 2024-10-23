@@ -22,98 +22,42 @@ h1 {
 label {
     display: block;
     margin-bottom: 10px;
-    font-weight: bold;
 }
 
-input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-button {
-    padding: 10px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ff6347;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #ff4500;
-}
-
+/* Styles for the pizza wheel */
 #wheelContainer {
     position: relative;
     width: 300px;
     height: 300px;
-    margin: 0 auto;
+    margin: 20px auto;
     border: 5px solid #ff6347;
     border-radius: 50%;
     overflow: hidden;
+    animation: spin 5s linear infinite;
+    background: conic-gradient(
+        #FFD700 0% 25%,   /* Slice 1 */
+        #FF8C00 25% 50%,  /* Slice 2 */
+        #FF4500 50% 75%,  /* Slice 3 */
+        #FF0000 75% 100%  /* Slice 4 */
+    );
 }
 
-.wedge {
+.number {
     position: absolute;
-    width: 50%;
-    height: 50%;
-    background-color: #ff6347;
-    border: 2px solid #fff;
-    transform-origin: 100% 100%;
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
-}
-
-.wedge:nth-child(1) {
-    transform: rotate(0deg);
-}
-
-.wedge:nth-child(2) {
-    transform: rotate(45deg);
-}
-
-.wedge:nth-child(3) {
-    transform: rotate(90deg);
-}
-
-.wedge:nth-child(4) {
-    transform: rotate(135deg);
-}
-
-.wedge:nth-child(5) {
-    transform: rotate(180deg);
-}
-
-.wedge:nth-child(6) {
-    transform: rotate(225deg);
-}
-
-.wedge:nth-child(7) {
-    transform: rotate(270deg);
-}
-
-.wedge:nth-child(8) {
-    transform: rotate(315deg);
-}
-
-.wedge span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
     font-weight: bold;
     color: #fff;
 }
 
-#resultContainer {
-    margin-top: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+.number1 { top: 10px; left: 125px; }
+.number2 { top: 125px; right: 10px; }
+.number3 { bottom: 10px; left: 125px; }
+.number4 { top: 125px; left: 10px; }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
