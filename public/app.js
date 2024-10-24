@@ -123,3 +123,8 @@ function getSelectedSlice() {
     let selectedSlice = Math.floor(selectedAngle / sliceSize) + 1;
     return selectedSlice;
 }
+
+// Define the random function to generate random numbers
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
